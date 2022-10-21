@@ -1,0 +1,36 @@
+@startuml
+
+class CircuitBreakerConfig {
+}
+
+class CircuitBreakerRegistry<<singleton>> {
+    - state: HashTable<String, State>
+}
+
+class State {
+    + {static}CLOSED: int
+    + {static}OPEN: int
+    + {static}HALF_OPEN: int
+    - numberOfBufferedCalls: int
+    - numberOfFailedCalls: int
+    - numberOfSlowCalls: int
+    - state: int
+    - openedAt: long
+}
+
+class CircuitBreakerFactory {
+    - create(id: String, CircuitBreakerRegistry): CircuitBreaker
+}
+
+class CircuitBreaker {
+    - id: String
+    - registry: CircuitBreakerRegistry
+    + run(domainLogic: Supplier<T>, Function<Throwable, T> fallback)
+}
+
+CircuitBreakerFactory -> CircuitBreakerConfig
+CircuitBreakerFactory --> CircuitBreaker
+CircuitBreakerFactory --> CircuitBreakerRegistry
+CircuitBreaker -> CircuitBreakerRegistry
+CircuitBreakerRegistry --> State
+@enduml
